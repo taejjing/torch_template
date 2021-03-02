@@ -1,6 +1,8 @@
 import torch.nn as nn
+import torch
 import torch.nn.functional as F
 from base import BaseModel
+from torchvision.models import resnet50
 
 
 class MnistModel(BaseModel):
@@ -20,3 +22,33 @@ class MnistModel(BaseModel):
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
+
+
+class NsfwResnet(BaseModel):
+    def __init__(self):
+        super().__init__()
+        self.net = resnet50()
+        state_dict = torch.load('./pretrained_model/resnet50-19c8e357.pth')
+        self.net.load_state_dict(state_dict)
+
+        self.net.fc = nn.Sequential(
+            nn.Linear(self.net.fc.in_features, 512),
+            nn.ReLU(True),
+            nn.Linear(512, 1),
+            nn.Sigmoid()
+        )
+        self._freeze_net()
+
+
+    def forward(self, x):
+        x = self.net(x)
+        x = torch.reshape(x, (-1,))
+        return x
+
+    def _freeze_net(self):
+        print("Feature Extraction, model freeze")
+        for param in self.net.parameters():
+            param.requires_grad = False
+
+        for param in self.net.fc.parameters():
+            param.requires_grad = True

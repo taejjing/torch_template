@@ -1,19 +1,19 @@
 {
-    "name": "Nsfw",
+    "name": "Mnist_LeNet",
     "n_gpu": 1,
 
     "arch": {
-        "type": "NsfwResnet",
+        "type": "MnistModel",
         "args": {}
     },
     "data_loader": {
-        "type": "NsfwDataLoader",
+        "type": "MnistDataLoader",
         "args":{
             "data_dir": "data/",
-            "batch_size": 64,
+            "batch_size": 128,
             "shuffle": true,
-            "validation_split": 0.2,
-            "num_workers": 3
+            "validation_split": 0.1,
+            "num_workers": 0
         }
     },
     "optimizer": {
@@ -24,9 +24,9 @@
             "amsgrad": true
         }
     },
-    "loss": "bce_logits_loss",
+    "loss": "nll_loss",
     "metrics": [
-        "binary_acc"
+        "accuracy", "top_k_acc"
     ],
     "lr_scheduler": {
         "type": "StepLR",
@@ -36,7 +36,7 @@
         }
     },
     "trainer": {
-        "epochs": 5,
+        "epochs": 10,
 
         "save_dir": "saved/",
         "save_period": 1,

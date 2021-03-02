@@ -14,11 +14,11 @@ def main(config):
     # setup data_loader instances
     data_loader = getattr(module_data, config['data_loader']['type'])(
         config['data_loader']['args']['data_dir'],
-        batch_size=512,
+        batch_size=256,
         shuffle=False,
         validation_split=0.0,
         training=False,
-        num_workers=2
+        num_workers=0
     )
 
     # build model architecture
@@ -42,24 +42,31 @@ def main(config):
     model.eval()
 
     total_loss = 0.0
-    total_metrics = torch.zeros(len(metric_fns))
+    total_metrics = torch.zeros(len(metric_fns)).to(device)
 
-    with torch.no_grad():
-        for i, (data, target) in enumerate(tqdm(data_loader)):
-            data, target = data.to(device), target.to(device)
-            output = model(data)
+    with open('./test_logs/test_result', 'w') as writer:
+        writer.write(f"path,target,predict,score\n")
+        with torch.no_grad():
+            for i, (data, target, file_path) in enumerate(tqdm(data_loader)):
+                data, target = data.to(device), target.to(device)
+                output = model(data)
 
-            #
-            # save sample images, or do something with output here
-            #
+                # save sample images, or do something with output here
+                t = target.cpu().numpy().astype(int)
+                o = (output.cpu().numpy() >= 0.5).astype(int)
+                s = output.cpu().numpy()
 
-            # computing loss, metrics on test set
-            loss = loss_fn(output, target)
-            batch_size = data.shape[0]
-            total_loss += loss.item() * batch_size
-            for i, metric in enumerate(metric_fns):
-                total_metrics[i] += metric(output, target) * batch_size
+                lines = list(zip(file_path, t, o, s))
+                writer.writelines(map(lambda x: f"{x[0]},{x[1]},{x[2]},{x[3]}\n", lines))
 
+                # computing loss, metrics on test set
+                loss = loss_fn(output, target)
+                batch_size = data.shape[0]
+                total_loss += loss.item() * batch_size
+                for i, metric in enumerate(metric_fns):
+                    # mid = metric(output, target) * batch_size
+                    total_metrics[i] += metric(output, target) * batch_size
+                    
     n_samples = len(data_loader.sampler)
     log = {'loss': total_loss / n_samples}
     log.update({

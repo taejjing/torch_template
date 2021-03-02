@@ -10,6 +10,14 @@ def accuracy(output, target):
     return correct / len(target)
 
 
+def binary_acc(y_pred, y_test):
+    y_pred_tag = (y_pred >= 0.5).float()
+    correct_results_sum = (y_pred_tag == y_test).sum().float()
+    acc = correct_results_sum/y_test.shape[0]
+    acc = torch.round(acc * 100)
+    return acc
+
+
 def top_k_acc(output, target, k=3):
     with torch.no_grad():
         pred = torch.topk(output, k, dim=1)[1]
