@@ -1,19 +1,22 @@
 {
-    "name": "Nsfw",
+    "name": "NSFW",
     "n_gpu": 1,
 
     "arch": {
         "type": "NsfwResnet",
-        "args": {}
+        "args": {
+            "freeze": true
+        }
     },
     "data_loader": {
         "type": "NsfwDataLoader",
         "args":{
-            "data_dir": "data/",
+            "data_dir": "data/relabel/",
             "batch_size": 64,
             "shuffle": true,
             "validation_split": 0.2,
-            "num_workers": 3
+            "num_workers": 3,
+            "calc_stats": false
         }
     },
     "optimizer": {
@@ -36,14 +39,14 @@
         }
     },
     "trainer": {
-        "epochs": 5,
+        "epochs": 100,
 
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,
         
         "monitor": "min val_loss",
-        "early_stop": 10,
+        "early_stop": 100,
 
         "tensorboard": true
     }

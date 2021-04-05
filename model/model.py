@@ -25,7 +25,7 @@ class MnistModel(BaseModel):
 
 
 class NsfwResnet(BaseModel):
-    def __init__(self):
+    def __init__(self, freeze=False):
         super().__init__()
         self.net = resnet50()
         state_dict = torch.load('./pretrained_model/resnet50-19c8e357.pth')
@@ -34,10 +34,10 @@ class NsfwResnet(BaseModel):
         self.net.fc = nn.Sequential(
             nn.Linear(self.net.fc.in_features, 512),
             nn.ReLU(True),
-            nn.Linear(512, 1),
-            nn.Sigmoid()
+            nn.Linear(512, 1)
         )
-        self._freeze_net()
+        if freeze:
+            self._freeze_net()
 
 
     def forward(self, x):
