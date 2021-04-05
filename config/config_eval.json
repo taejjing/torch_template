@@ -1,0 +1,23 @@
+{
+    "name": "eval_test",
+    "n_gpu": 1,
+    "result_dir" : "test_logs/",
+
+    "arch": {
+        "type": "NsfwResnet",
+        "args": {}
+    },
+    "data_loader": {
+        "type": "NsfwDataLoader",
+        "args":{
+            "data_dir": "data/relabel/",
+            "eval": true,
+            "batch_size": 512,
+            "num_workers": 3
+        }
+    },
+    "loss": "bce_logits_loss",
+    "metrics": [
+        "binary_acc"
+    ]
+}

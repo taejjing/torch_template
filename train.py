@@ -18,7 +18,7 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 np.random.seed(SEED)
 
-def main(config):
+def main(config: ConfigParser):
     logger = config.get_logger('train')
 
     # setup data_loader instances
@@ -43,6 +43,7 @@ def main(config):
     trainable_params = filter(lambda p: p.requires_grad, model.parameters())
     optimizer = config.init_obj('optimizer', torch.optim, trainable_params)
     lr_scheduler = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer)
+
 
     trainer = Trainer(model, criterion, metrics, optimizer,
                       config=config,

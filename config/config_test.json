@@ -1,0 +1,19 @@
+{
+    "name": "test_nsfw",
+    "n_gpu": 1,
+    "result_dir" : "test_logs/",
+
+    "arch": {
+        "type": "NsfwResnet",
+        "args": {}
+    },
+
+    "data_loader": {
+        "type": "NsfwDataLoader",
+        "args":{
+            "data_dir": "data/crawling/",
+            "batch_size": 512,
+            "num_workers": 3
+        }
+    }
+}

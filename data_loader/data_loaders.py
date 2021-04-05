@@ -19,24 +19,13 @@ class MnistDataLoader(BaseDataLoader):
 
 
 class NsfwDataLoader(BaseDataLoader):
-    def __init__(self, data_dir, batch_size, shuffle=True, validation_split=0.0, num_workers=1, training=True):
+    def __init__(self, data_dir, batch_size, shuffle=True, validation_split=0.0, num_workers=1, training=True, eval=False, calc_stats=False):
         trsfm = transforms.Compose([
             transforms.ToTensor(),
             transforms.Resize((256, 256)),
-            # transforms.ColorJitter(brightness=0.5, saturation=0.5, hue=0.5),
             transforms.RandomRotation([-8, +8]),
-            transforms.Normalize((0.5413, 0.5142, 0.4956), (0.6192, 0.5937, 0.5768)),
+            transforms.Normalize((0.5413, 0.5142, 0.4956), (0.6192, 0.5937, 0.5768))
         ])
         self.data_dir = data_dir
-        self.dataset = NsfwDataset(root=data_dir, transform=trsfm)
+        self.dataset = NsfwDataset(root=data_dir, transform=trsfm, training=training, eval=eval, calc_stats=calc_stats)
         super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
-
-
-# home = '/Users/jin/PycharmProjects/nsfw_torch'
-# dataloader = NsfwDataLoader(data_dir=home+"/data/nsfw/", batch_size=32, num_workers=4)
-#
-# for i, (data, target) in enumerate(tqdm(dataloader)):
-#     pass
-
-
-
